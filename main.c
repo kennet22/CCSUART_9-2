@@ -2,7 +2,6 @@
 #include <msp430.h>
 #include <stdlib.h>
 #include <stdio.h>
-//#include <conversion.c>
 #include <math.h>
 #include <ctype.h>
 
