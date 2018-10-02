@@ -57,12 +57,10 @@ int main(void)
     while(1){
         if (!((P1IN & Button) == Button)){
             float f = 12.123;
-            //char buffer = ftoa(f);
-            char buffer[sizeof(f)];
-            sprintf(buffer, "%f", f);
-            //char s = (char)f;
+            char buffer[sizeof(f)];       // Create a char array the size of the float value 
+            sprintf(buffer, "%.2f", f);   // Converts float to C-string ; requires Project>Properties>Compiler>full printf exception
             sendData(buffer);
-            _delay_cycles(100000);
+            _delay_cycles(100000);      // Delay in place for debounce of button press
             P1OUT ^= BIT6;
         }
     }
@@ -71,25 +69,13 @@ int main(void)
 void sendData(char* tx_data){
     unsigned int i = 0;
     P1OUT ^= BIT0;
-    while(tx_data[i]){
+    while(tx_data[i]){     // While there is a character in the string, send it
         while((UCA0STAT & UCBUSY));
-        UCA0TXBUF = tx_data[i];
+        UCA0TXBUF = tx_data[i];         // Sets a char to be transmitted
         i++;
     }
-
 }
 
-/*__interrupt void USCI0TX_ISR(void)
-{
-   P1OUT |= TXLED;
-   UCA0TXBUF = 1; // TX next character
-
-   if (i == sizeof string - 1) // TX over?
-      UC0IE &= ~UCA0TXIE; // Disable USCI_A0 TX interrupt
-
-   P1OUT &= ~TXLED;
-}*/
-/* Echo back RXed character, confirm TX buffer is ready first */
 #pragma vector=USCIAB0RX_VECTOR
 __interrupt void USCI0RX_ISR(void)
 {
@@ -104,7 +90,6 @@ __interrupt void USCI0RX_ISR(void)
         }
         while (!(IFG2&UCA0TXIFG)); // USCI_A0 TX buffer ready?
         sendData("1\r\n");
-        //UC0IE &= ~UCA0TXIE; // Disable USCI_A0 TX interrupt
     break;
 
     case 0x32:
@@ -150,67 +135,4 @@ __interrupt void USCI0RX_ISR(void)
     break;
 
     }
-
-
 }
-    /*case 0x31:  // "1"
-        for(i = 0; i < 50000; i++){
-            P1OUT ^= BIT0;
-            P1OUT ^= BIT6;
-        }
-        break;
-
-    case 0x32:  // "2"
-        for(i = 0; i < 50000; i++){
-            P1OUT ^= BIT3;
-            P1OUT ^= BIT6;
-
-        }
-        break;
-
-    case 0x33:  // "3"
-        for(i = 0; i < 50000; i++){
-            P1OUT ^= BIT4;
-            P1OUT ^= BIT6;
-
-        }
-        break;
-
-    case 0x34:  // "4"
-        for(i = 0; i < 50000; i++){
-            P1OUT ^= BIT5;
-            P1OUT ^= BIT6;
-
-        }
-        break;
-
-    case 0x35:  // "5"
-        for(i = 0; i < 60000; i++){
-            P2OUT ^= 0x01;
-            P1OUT ^= BIT6;
-        }
-        break;
-
-    case 0x36:  // "6"
-        for(i = 0; i < 60000; i++){
-            P2OUT ^= BIT1;
-            P1OUT ^= BIT6;
-        }
-        break;
-
-    case 0x37:  // "7"
-        for(i = 0; i < 60000; i++){
-            P2OUT ^= BIT4;
-            P1OUT ^= BIT6;
-        }
-        break;
-
-    case 0x38:  // "8"
-        for(i = 0; i <= 60000; i++){
-            P2OUT ^= BIT2;
-            P1OUT ^= BIT6;
-            if (i == 59999){
-                break;
-            }
-        }
-        break;*/
